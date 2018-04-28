@@ -23,4 +23,5 @@ NOTE: The last parameter is used to traverse the docker-compose yaml. For exampl
         web:
             image: my-docker-image:latest
 
-then the argument would be: 'services,web,image'
+then the argument would be: `'services,web,image'`
+
