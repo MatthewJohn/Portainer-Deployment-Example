@@ -76,6 +76,24 @@ if old_version == args.deploy_version:
 
 sub_config[args.tag_parameter.split(',')[-1]] = args.deploy_version
 
+# Pull Image
+print 'Pulling image'
+image_name_split = args.deploy_version.split(':')
+image_name = ':'.join(image_name_split[0:-1])
+image_version = image_name_split[-1]
+print 'Image name: %s' % image_name
+print 'Image version: %s' % image_version
+params = {'fromImage': image_name, 'tag': image_version}
+pull_image_res = requests.post(
+    '%s/api/endpoints/%s/docker/images/create' % (config['host'], endpoint_id),
+    params=params, headers=auth_header
+)
+if pull_image_res.status_code != 200:
+    raise Exception('Error whilst pulling image: %s' % pull_image_res.status_code)
+print 'Successfully pulled image'
+
+# Perform deployment
+print 'Starting deployment'
 update_res = requests.put('%s/api/endpoints/%s/stacks/%s' % (config['host'], endpoint_id, stack_id),
                           data=json.dumps({'StackFileContent': yaml.dump(docker_compose)}),
                           headers=auth_header)
